@@ -22,6 +22,8 @@ import {
   ChevronRight,
   NetworkIcon,
   WifiIcon,
+  Github,
+  Search,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { p } from "motion/react-client";
@@ -484,19 +486,19 @@ export default function App() {
             <ProjectCard
               repo="Network_Scanner"
               icon={WifiIcon}
-              description="Creative video production and 3D animation projects. Blending technical engineering with high-fidelity visual storytelling."
-              tags={["ANIMATION", "CREATIVE_DIR"]}
+              description="NetMon is a lightweight Python network traffic monitoring tool that offers a GUI, CLI, and a simple web dashboard. It captures live packets, summarizes protocol usage, and highlights basic anomalies in near real time."
+              tags={["NETWORKING", "Protocol_Analysis", "PYTHON"]}
             />
             <ProjectCard
-              repo="AI_DRIVEN_APPS"
-              icon={Bot}
-              description="Complex LLM integrations and autonomous system architectures. Building agents that reason and execute across multi-modal interfaces."
-              tags={["LLM", "AGENTS"]}
+              repo="Word Definition Browser Extension"
+              icon={Search}
+              description="A browser extension that lets users highlight a single word on any webpage and instantly view its dictionary definition in a tooltip, enhancing reading and comprehension without leaving the page"
+              tags={["BROWSER_EXTENSION", "JAVASCRIPT", "API_INTEGRATION"]}
             />
             <ProjectCard
               repo="STUDIO_BRANDING"
               icon={Palette}
-              description="Professional music studio branding and digital identity systems. Niche technical and artistic solutions for the audio industry."
+              description="A browser extension that lets users highlight a single word on any webpage and instantly view its dictionary definition in a tooltip, enhancing reading and comprehension without leaving the page"
               tags={["BRANDING", "DESIGN"]}
             />
           </div>
@@ -523,7 +525,7 @@ export default function App() {
                     value: "samarpanaryal7+dev@email.com",
                   },
                   {
-                    icon: Share2,
+                    icon: Github,
                     label: "SOURCE_CODE",
                     value: "github.com/samarpan_77",
                   },
