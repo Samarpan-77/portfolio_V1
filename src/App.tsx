@@ -30,6 +30,7 @@ import {
 } from "lucide-react";
 import { motion } from "motion/react";
 import { p } from "motion/react-client";
+import { createClient } from "@supabase/supabase-js";
 
 const Typewriter = ({
   text,
@@ -209,6 +210,24 @@ const AnimatedSection = ({
 
 export default function App() {
   const [status, setStatus] = useState("ONLINE");
+  const [formState, setFormState] = useState({
+    name: "",
+    email: "",
+    message: "",
+  });
+  const [submitState, setSubmitState] = useState<
+    "idle" | "sending" | "success" | "error"
+  >("idle");
+  const [submitError, setSubmitError] = useState<string | null>(null);
+
+  const supabaseUrl = import.meta.env.VITE_SUPABASE_URL as string | undefined;
+  const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY as
+    | string
+    | undefined;
+  const supabase =
+    supabaseUrl && supabaseAnonKey
+      ? createClient(supabaseUrl, supabaseAnonKey)
+      : null;
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -216,6 +235,53 @@ export default function App() {
     }, 5000);
     return () => clearInterval(interval);
   }, []);
+
+  const handleFormChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = event.target;
+    setFormState((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleBroadcastSignal = async (
+    event: React.FormEvent<HTMLFormElement>
+  ) => {
+    event.preventDefault();
+    setSubmitError(null);
+
+    if (!supabase) {
+      setSubmitState("error");
+      setSubmitError(
+        "Missing Supabase config. Check VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY."
+      );
+      return;
+    }
+
+    if (!formState.name.trim() || !formState.email.trim()) {
+      setSubmitState("error");
+      setSubmitError("Name and email are required.");
+      return;
+    }
+
+    setSubmitState("sending");
+
+    const { error } = await supabase.from("contact_messages").insert([
+      {
+        name: formState.name.trim(),
+        email: formState.email.trim(),
+        message: formState.message.trim(),
+      },
+    ]);
+
+    if (error) {
+      setSubmitState("error");
+      setSubmitError(error.message);
+      return;
+    }
+
+    setSubmitState("success");
+    setFormState({ name: "", email: "", message: "" });
+  };
 
   return (
     <div className="relative min-h-screen overflow-x-hidden scanline">
@@ -573,7 +639,7 @@ export default function App() {
               </div>
             </div>
             <div className="glow-border bg-primary/5 p-6 rounded-lg">
-              <form className="space-y-4" onSubmit={(e) => e.preventDefault()}>
+              <form className="space-y-4" onSubmit={handleBroadcastSignal}>
                 <div>
                   <label className="block font-mono text-[10px] text-primary/60 mb-1 uppercase">
                     Identification
@@ -582,6 +648,9 @@ export default function App() {
                     className="w-full bg-background-dark border border-primary/30 rounded px-3 py-2 text-sm font-mono text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 placeholder:text-primary/20"
                     placeholder="USER_NAME"
                     type="text"
+                    name="name"
+                    value={formState.name}
+                    onChange={handleFormChange}
                   />
                 </div>
                 <div>
@@ -592,6 +661,9 @@ export default function App() {
                     className="w-full bg-background-dark border border-primary/30 rounded px-3 py-2 text-sm font-mono text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 placeholder:text-primary/20"
                     placeholder="EMAIL@PROTOCOL.IO"
                     type="email"
+                    name="email"
+                    value={formState.email}
+                    onChange={handleFormChange}
                   />
                 </div>
                 <div>
@@ -602,11 +674,29 @@ export default function App() {
                     className="w-full bg-background-dark border border-primary/30 rounded px-3 py-2 text-sm font-mono text-primary focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/50 placeholder:text-primary/20"
                     placeholder="ENTER MESSAGE..."
                     rows={4}
+                    name="message"
+                    value={formState.message}
+                    onChange={handleFormChange}
                   ></textarea>
                 </div>
-                <button className="w-full bg-primary/20 border border-primary text-primary font-mono font-bold py-3 text-sm hover:bg-primary hover:text-background-dark transition-all uppercase tracking-widest shadow-[0_0_10px_rgba(236,91,19,0.2)]">
-                  Broadcast_Signal
+                <button
+                  className="w-full bg-primary/20 border border-primary text-primary font-mono font-bold py-3 text-sm hover:bg-primary hover:text-background-dark transition-all uppercase tracking-widest shadow-[0_0_10px_rgba(236,91,19,0.2)] disabled:opacity-60 disabled:cursor-not-allowed"
+                  disabled={submitState === "sending"}
+                >
+                  {submitState === "sending"
+                    ? "Transmitting..."
+                    : "Broadcast_Signal"}
                 </button>
+                {submitState === "success" ? (
+                  <p className="text-[10px] font-mono text-primary/70 uppercase">
+                    Signal received. Thanks for reaching out.
+                  </p>
+                ) : null}
+                {submitState === "error" && submitError ? (
+                  <p className="text-[10px] font-mono text-red-400 uppercase">
+                    {submitError}
+                  </p>
+                ) : null}
               </form>
             </div>
           </div>
