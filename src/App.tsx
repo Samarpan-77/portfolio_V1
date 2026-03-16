@@ -24,6 +24,9 @@ import {
   WifiIcon,
   Github,
   Search,
+  Check,
+  User,
+  UserCheck,
 } from "lucide-react";
 import { motion } from "motion/react";
 import { p } from "motion/react-client";
@@ -496,10 +499,10 @@ export default function App() {
               tags={["BROWSER_EXTENSION", "JAVASCRIPT", "API_INTEGRATION"]}
             />
             <ProjectCard
-              repo="STUDIO_BRANDING"
-              icon={Palette}
-              description="A browser extension that lets users highlight a single word on any webpage and instantly view its dictionary definition in a tooltip, enhancing reading and comprehension without leaving the page"
-              tags={["BRANDING", "DESIGN"]}
+              repo="Personal Portfolio"
+              icon={UserCheck}
+              description="A personal portfolio website showcasing my projects, skills, and experience."
+              tags={["Portfolio", "React", "TailwindCSS"]}
             />
           </div>
         </AnimatedSection>
@@ -523,16 +526,19 @@ export default function App() {
                     icon: Mail,
                     label: "EMAIL_ADDRESS",
                     value: "samarpanaryal7+dev@email.com",
+                    href: "mailto:samarpanaryal7+dev@email.com",
                   },
                   {
                     icon: Github,
                     label: "SOURCE_CODE",
-                    value: "github.com/samarpan_77",
+                    value: "github.com/Samarpan-77",
+                    href: "https://github.com/Samarpan-77",
                   },
                   {
                     icon: Network,
                     label: "PROFESSIONAL_NET",
-                    value: "linkedin.com/in/samarpanaryal",
+                    value: "linkedin.com/in/samarpan-aryal",
+                    href: "https://linkedin.com/in/samarpan-aryal",
                   },
                 ].map((item, i) => (
                   <motion.div
@@ -547,9 +553,20 @@ export default function App() {
                       <p className="text-[10px] font-mono text-primary/60 uppercase">
                         {item.label}
                       </p>
-                      <p className="font-mono text-sm text-primary">
+                      <a
+                        href={item.href}
+                        className="font-mono text-sm text-primary hover:text-accent-glow transition-colors"
+                        target={
+                          item.href.startsWith("http") ? "_blank" : undefined
+                        }
+                        rel={
+                          item.href.startsWith("http")
+                            ? "noopener noreferrer"
+                            : undefined
+                        }
+                      >
                         {item.value}
-                      </p>
+                      </a>
                     </div>
                   </motion.div>
                 ))}
